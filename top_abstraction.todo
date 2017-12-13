@@ -1,0 +1,15 @@
+
+first thing first:
+	☐	load object from RAM
+		☐	data structure:
+		☐	SD-card reading and storing
+	☐	VGA scanning principle and API
+	☐	rasterizer
+		☐	coordinate transform
+		☐	shading and source lighting
+	☐	other features
+		☐	beeping when shooting
+		☐	texture: on shooter and wall
+		☐	mouse ctrl: pointer
+		☐	beginning and ending: 
+			☐	animation
