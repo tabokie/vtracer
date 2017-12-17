@@ -1,5 +1,14 @@
 `timescale 1ns / 1ps
 
+// today's progress:
+// implement basic structure
+// todo:
+// from double ram to single dual port ram <-
+// implement object ram and their correponding decoder and first-level sdf <- multi-facet? wall?
+// add full set ray tracing <- light management ? three light: myLight, lampLight, highLight
+// add scene <- // coords and boundary
+// about control ==> collision judgement and random enemies <- complicated, maybe state machine?
+
 module top(
     input clk,
     input rst,
@@ -147,13 +156,18 @@ module ray_tracer(
     output [11:0] dout
 )
 
+    reg [NUM_OBJ : 0] tracer_sig;
     generate
         genvar i;
-        for(i = 0; i < NUM_OBJ; i = i+1) begin
-            
+        for(i = 0; i < NUM_OBJ; i = i+1) begin : tracer_instance
+            reg [2:0] obj_type;
+            reg [3:0] obj_id;
+
+            ray_tracer #(.ret_sig(tracer_sig[i]));
+
         end
     endgenerate
-    
+
 endmodule
 
 
