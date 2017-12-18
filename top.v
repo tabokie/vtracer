@@ -47,11 +47,13 @@ module top(
     reg [11:0] tracer_dout;
     wire [5:0] write_row_addr;
     wire [6:0] write_col_addr;
+    wire [3:0] collision;
     ray_tracer_host #(
         .tracer_clk(clkdiv[0]),
         .col_addr(write_col_addr),
         .row_addr(write_row_addr),
         .dout(tracer_dout),
+        .collision_sig(collision)
         // .sinc_ret(en_ram)
     )
 
@@ -70,7 +72,13 @@ module top(
     )
 
     control_host #(
-
+        .key(key_sig),
+        .en_left(collision[3]),
+        .en_right(collision[2]),
+        .en_forward(collision[1]),
+        .en_backward(collision[0]),
+        .rotate_sig(rotate_sig),
+        .move_sig(move_sig)
     )
 
     object_host #(
@@ -103,8 +111,20 @@ module control_host(
 
 endmodule
 
+// connected with bus
+// divided into 
+// player
+// light
+// objects
+
+// transfer view_ray and one object and lights to trace_obj
+// get t
+// calc normal
+// transfer light_ray and lights to trace_light
+
 module object_host(
     input  
+    output [1024:0] out_bus
 )
 
 endmodule
@@ -112,6 +132,7 @@ endmodule
 module ray_tracer_host(
     input tracer_clk,
     input rst,
+    input [1024:0] in_bus,
     output reg [6:0] col_addr,
     output reg [5:0] row_addr,
     output reg [11:0] dout,
@@ -120,6 +141,8 @@ module ray_tracer_host(
     wire tracer_sig;
     reg [6:0] col_cnt;
     reg [5:0] row_cnt;
+
+    view_ray #()
 
     ray_tracer #(
         .col_coord(col_cnt), .row_coord(row_cnt), 
@@ -134,6 +157,7 @@ endmodule
 module ray_tracer(
     input [6:0] col_coord,
     input [5:0] row_coord,
+    input [1024:0] in_bus,
     output ret_sig,
     output [11:0] dout
 )
@@ -151,4 +175,8 @@ module ray_tracer(
     endgenerate
 
 endmodule
+
+module light_tracer
+
+module trace_sphere
 
