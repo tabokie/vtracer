@@ -43,7 +43,6 @@ module top(
         .r(r),.g(g),.b(b),
     );
 
-    wire en_ram;
     reg [11:0] tracer_dout;
     wire [5:0] write_row_addr;
     wire [6:0] write_col_addr;
@@ -54,10 +53,8 @@ module top(
         .row_addr(write_row_addr),
         .dout(tracer_dout),
         .collision_sig(collision)
-        // .sinc_ret(en_ram)
     )
 
-    // connect double ram
     wire tracer_write_addr;
     wire vga_read_addr;
     assign tracer_write_addr = {write_col_addr,write_row_addr};
