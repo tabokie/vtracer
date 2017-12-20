@@ -42,13 +42,15 @@ module top(
         .hs(hs),.vs(vs),
         .r(r),.g(g),.b(b),
     );
-
+    wire [127:0] object_ram_bus;
     reg [11:0] tracer_dout;
     wire [5:0] write_row_addr;
     wire [6:0] write_col_addr;
     wire [3:0] collision;
     ray_tracer_host #(
         .tracer_clk(clkdiv[0]),
+        .rst(rst).
+        .in_bus(object_ram_bus),
         .col_addr(write_col_addr),
         .row_addr(write_row_addr),
         .dout(tracer_dout),
@@ -79,11 +81,16 @@ module top(
     )
 
     object_host #(
-
+        .clk(clkdiv[0]),
+        .rotate(rotate_sig),
+        .move(move_sig),
+        .out_bus(object_ram_bus)
     )
 
 endmodule
 
+// move: a_b a forward, b backward
+// rotate: a_b a left, b right
 module control_host(
     input key,
     input en_left,
@@ -120,60 +127,35 @@ endmodule
 // transfer light_ray and lights to trace_light
 
 module object_host(
-    input  
-    output [1024:0] out_bus
+    input clk,
+    input [1:0] rotate,
+    input [1:0] move,
+    output [127:0] out_bus
 )
+    // int: 12-bit
+    // point: 12-bit * 12-bit * 8-bit(height)
+    // vector: same as point
 
-endmodule
 
-module ray_tracer_host(
-    input tracer_clk,
-    input rst,
-    input [1024:0] in_bus,
-    output reg [6:0] col_addr,
-    output reg [5:0] row_addr,
-    output reg [11:0] dout,
-    // output sinc_ret
-)
-    wire tracer_sig;
-    reg [6:0] col_cnt;
-    reg [5:0] row_cnt;
+    // x,y:24-bit; z: 8-bit; add up to 32-bit
+    reg [31:0] player;
+    reg [31:0] view_normal;
 
-    view_ray #()
+    reg [31:0] sphere0_center;
+    reg [11:0] sphere0_radius;
 
-    ray_tracer #(
-        .col_coord(col_cnt), .row_coord(row_cnt), 
-        .ret_sig(tracer_sig), .dout(dout)
-    );
-    always @(tracer_sig and posedge tracer_clk) begin
-        
+    always @(posedge clk)begin
+        case(rotate)
+            2'b01:view_normal <= 
+            2'b10:
+        endcase
+        case(move)
+            2'b01:player <= player - view_normal*move_speed;
+            2'b10:player <= player + view_normal*move_speed;
+        endcase
     end
 
-endmodule
-
-module ray_tracer(
-    input [6:0] col_coord,
-    input [5:0] row_coord,
-    input [1024:0] in_bus,
-    output ret_sig,
-    output [11:0] dout
-)
-
-    reg [NUM_OBJ : 0] tracer_sig;
-    generate
-        genvar i;
-        for(i = 0; i < NUM_OBJ; i = i+1) begin : tracer_instance
-            reg [2:0] obj_type;
-            reg [3:0] obj_id;
-
-            ray_tracer #(.ret_sig(tracer_sig[i]));
-
-        end
-    endgenerate
+    assign outbus[63:0] = {view_normal, player};
+    assign outbus[107:64] = {sphere0_radius,sphere0_center}; 
 
 endmodule
-
-module light_tracer
-
-module trace_sphere
-

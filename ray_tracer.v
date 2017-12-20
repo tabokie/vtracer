@@ -1,74 +1,54 @@
-
-module ray_tracer_host(
-    input tracer_clk,
-    input rst,
-    input [127:0] in_bus,
-    output reg [6:0] col_addr,
-    output reg [5:0] row_addr,
-    output reg [11:0] dout,
-    output reg [3:0] collosion_sig,
+module ray_tracer(
+    input [127:0] in_bus;
+    input [27:0] init;
+    input [27:0] dir;
+    output [11:0] dout;
+    output tracer_ret;
+    output collision_sig;
 )
-    wire tracer_sig;
-    reg [6:0] col_cnt;
-    reg [5:0] row_cnt;
+    // trace each object
+    // object 0: sphere
+    reg [10:0] t0;
+    wire [] object0;
+    assign object0 = in_bus[];
+    ray_tracer_sphere();
 
-    ray_tracer #(
-        .col_coord(col_cnt), .row_coord(row_cnt), 
-        .ret_sig(tracer_sig), .dout(dout)
-    );
-    always @(posedge tracer_sig) begin
-        if(!clear)begin
-            col_cnt <= 7'd0;
-        end
-        else if(col_cn == 7'd127) begin
-            col_cnt <= 7'd0;
-        end
-        else begin
-            col_cnt <= col_cnt + 7'd1;
-        end
-    end
+    // solve minimum intersection
+    reg [2:0] min_id;
+    min_8in(.in0(t0),.in1,.out(min_id));
 
-    always @(posedge tracer_sig) begin
-        if(!clear) begin
-            row_cnt <= 6'd0;
-        end
-        else if(col_cnt == 7'd127) begin
-            if(row_cnt == 6'd63) begin
-                row_cnt <= 6'd0;
-            end
-            else begin
-                row_cnt <= row_cnt + 6'd1;
-            end
-        end
+    // check collision
+    reg collision_sig;
+    `define err ...
+    if(t[min_id] < err)assign collision_sig = 1;
+
+    // shading
+    // simple test
+    if(t[min_id] > err)assign dout = BLACK;
+    else assign dout = WHITE;
+
+    // set return
+    always @(dout) begin
+        tracer_ret <= 1'b1;
     end
 
 endmodule
 
-module ray_tracer(
-    input [6:0] col_coord,
-    input [5:0] row_coord,
-    input [127:0] in_bus,
-    output ret_sig,
-    output [11:0] dout
-)
 
-    reg [NUM_OBJ : 0] tracer_sig;
+    /*
+    reg [NUM-1:0] object_sig;
     generate
         genvar i;
         for(i = 0; i < NUM_OBJ; i = i+1) begin : tracer_instance
             reg [2:0] obj_type;
             reg [3:0] obj_id;
 
-            ray_tracer #(.ret_sig(tracer_sig[i]));
+            ray_tracer #(.ret_sig(object_sig[i]));
 
         end
     endgenerate
-
-endmodule
-
-module view_ray
-
-module light_tracer
-
-module trace_sphere
-
+    reg [NUM-1:0] intersect_id;
+    always @(object_sig)begin
+        
+    end
+    */
