@@ -7,24 +7,28 @@ module ray_tracer(
     output collision_sig;
 )
     // trace each object
+    // set 8 objects with 10-bit output t
+    reg [9:0] t[7:0]
     // object 0: sphere
-    reg [10:0] t0;
     wire [] object0;
+    wire [9:0] t0;
+    assign t0 = t[0];
     assign object0 = in_bus[];
     ray_tracer_sphere();
 
     // solve minimum intersection
     reg [2:0] min_id;
-    min_8in(.in0(t0),.in1,.out(min_id));
+    min 8_in(.in_bus(t),.out(min_id));
 
     // check collision
     reg collision_sig;
-    `define err ...
-    if(t[min_id] < err)assign collision_sig = 1;
+    `define collision_bd ...
+    if(t[min_id] < collision_bd)assign collision_sig = 1;
 
     // shading
     // simple test
-    if(t[min_id] > err)assign dout = BLACK;
+    `define tracer_bd
+    if(t[min_id] > bd)assign dout = BLACK;
     else assign dout = WHITE;
 
     // set return
@@ -34,21 +38,3 @@ module ray_tracer(
 
 endmodule
 
-
-    /*
-    reg [NUM-1:0] object_sig;
-    generate
-        genvar i;
-        for(i = 0; i < NUM_OBJ; i = i+1) begin : tracer_instance
-            reg [2:0] obj_type;
-            reg [3:0] obj_id;
-
-            ray_tracer #(.ret_sig(object_sig[i]));
-
-        end
-    endgenerate
-    reg [NUM-1:0] intersect_id;
-    always @(object_sig)begin
-        
-    end
-    */
