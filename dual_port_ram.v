@@ -4,7 +4,7 @@ module dual_port_ram(
     input [WIDTH-1:0] read_addr,
     input [LENGTH-1:0] din,
     output [LENGTH-1:0] dout
-)
+);
 
     parameter WIDTH;
     parameter LENGTH;
