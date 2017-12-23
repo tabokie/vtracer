@@ -19,7 +19,7 @@ module top(
     output [3:0] g,
     output [3:0] b 
 
-)
+);
     
     reg [31:0] clkdiv;
     always@( posedge clk) begin
@@ -89,73 +89,3 @@ module top(
 
 endmodule
 
-// move: a_b a forward, b backward
-// rotate: a_b a left, b right
-module control_host(
-    input key,
-    input en_left,
-    input en_right,
-    input en_forward,
-    input en_backward,
-    output [1:0] rotate_sig,
-    output [1:0] move_sig
-)
-    reg [1:0] rotate;
-    reg [1:0] move;
-    case(key)begin
-        
-    endcase
-
-    always@* begin
-        if(en_left)rotate_sig[1] <= rotate[1];
-        if(en_right)rotate_sig[0] <= rotate[0];
-        if(en_forward)move_sig[1] <= move[1];
-        if(en_backward)move_sig[0] <= move[0];
-    end
-
-endmodule
-
-// connected with bus
-// divided into 
-// player
-// light
-// objects
-
-// transfer view_ray and one object and lights to trace_obj
-// get t
-// calc normal
-// transfer light_ray and lights to trace_light
-
-module object_host(
-    input clk,
-    input [1:0] rotate,
-    input [1:0] move,
-    output [127:0] out_bus
-)
-    // int: 12-bit
-    // point: 12-bit * 12-bit * 8-bit(height)
-    // vector: same as point
-
-
-    // x,y:24-bit; z: 8-bit; add up to 32-bit
-    reg [31:0] player;
-    reg [31:0] view_normal;
-
-    reg [31:0] sphere0_center;
-    reg [11:0] sphere0_radius;
-
-    always @(posedge clk)begin
-        case(rotate)
-            2'b01:view_normal <= 
-            2'b10:
-        endcase
-        case(move)
-            2'b01:player <= player - view_normal*move_speed;
-            2'b10:player <= player + view_normal*move_speed;
-        endcase
-    end
-
-    assign outbus[63:0] = {view_normal, player};
-    assign outbus[107:64] = {sphere0_radius,sphere0_center}; 
-
-endmodule

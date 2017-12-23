@@ -9,7 +9,7 @@ module vga(
     output reg [3:0] r,
     output reg [3:0] g,
     output reg [3:0] b 
-)
+);
 
     // h_count: VGA horizontal counter (0-799)
     reg [9:0] h_count; // VGA horizontal counter (0-799): pixels
@@ -51,9 +51,9 @@ module vga(
         rdn      <= ~read;     // read pixel (active low)
         hs       <=  h_sync;   // horizontal synchronization
         vs       <=  v_sync;   // vertical   synchronization
-        r        <=  rdn ? 4'h0 : d_in[3:0]; // 3-bit red
-        g        <=  rdn ? 4'h0 : d_in[7:4]; // 3-bit green
-        b        <=  rdn ? 4'h0 : d_in[11:8]; // 2-bit blue
+        r        <=  rdn ? 4'h0 : d_in[3:0]; // 4-bit red
+        g        <=  rdn ? 4'h0 : d_in[7:4]; // 4-bit green
+        b        <=  rdn ? 4'h0 : d_in[11:8]; // 4-bit blue
     end
 
 endmodule

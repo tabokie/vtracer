@@ -3,7 +3,7 @@ module view_ray(
 	input [9:0] view_dist, // d0
 	input [12:0] view_loc, // (x,y) 6-7
 	output [27:0] view_out
-)
+);
 
 	reg [27:0] view_reg; // 10-10-8 :: x-y-z
 	wire [19:0] dx;
@@ -13,7 +13,7 @@ module view_ray(
 	assign dy[9:0] = view_normal[17:8];
 	assign dz[9:0] = view_normal[7:0];
 	reg [19:0] d_length;
-	mold #(.x(dx),.y(dy),.z(dx),.mold(d_length));
+	mold mold0(.x(dx),.y(dy),.z(dx),.mold(d_length));
 
 	wire [19:0] expanded_view_dist;
 	assign expanded_view_dist[9:0] = view_dist;
@@ -32,22 +32,3 @@ module view_ray(
 
 endmodule
 
-module mold(
-	input [19:0] x;
-	input [19:0] y;
-	input [19:0] z;
-	output [19:0] mold;
-)
-
-	wire [19:0] x2 = x*x;
-	wire [19:0] y2 = y*y;
-	wire [19:0] z2 = z*z;
-	wire [19:0] sum = x2+y2+z2;
-	sqrt_20 #(.d_in(sum),.d_out(mold));
-
-endmodule
-
-// module sqrt_20(
-// )
-
-// endmodule
