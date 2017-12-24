@@ -1,15 +1,15 @@
 module ray_tracer_sphere(
 	input [27:0] init,
-	input [27:0] dir,
-	input [49:0] object_in, // 12(color)-10(r)-28(center) = 50
+	input [30:0] dir,
+	input [47:0] object_in, // 12(color)-8(r)-28(center) = 48
 	output [9:0] t_out
 );
 
 	wire [27:0] c;
 	assign c = object_in[27:0];
 	wire [19:0] r;
-	assign r[19:10] = 10'b0;
-	assign r[9:0] = object_in[37:28];
+	assign r[19:8] = 10'b0;
+	assign r[7:0] = object_in[35:28];
 
 	wire [19:0]d_x;
 	assign d_x[19:10] = 10'b0;

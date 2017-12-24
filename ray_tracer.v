@@ -12,7 +12,7 @@ module ray_tracer(
     output reg tracer_ret,
     output reg collision_sig
 );
-    // trace each object
+    // trace each object4
     // set 8 objects with 10-bit output t
     reg [9:0] t[7:0];
     // object 0: sphere
