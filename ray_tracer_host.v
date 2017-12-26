@@ -13,13 +13,17 @@ module ray_tracer_host(
     // generate visit pixel
     reg [6:0] col_cnt;
     reg [5:0] row_cnt;
-    wire clear;
-    assign clear = 1;
-    always @(posedge tracer_sig) begin
+    reg clear = 1'b1;
+    always @(posedge rst)begin
+        clear <= 1'b0;
+    end
+
+    always @(posedge tracer_sig or posedge clear) begin
         if(!clear)begin
             col_cnt <= 7'd0;
+            clear <= 1'b1;
         end
-        else if(col_cn == 7'd127) begin
+        else if(col_cnt == 7'd127) begin
             col_cnt <= 7'd0;
         end
         else begin
@@ -27,7 +31,7 @@ module ray_tracer_host(
         end
     end
 
-    always @(posedge tracer_sig) begin
+    always @(posedge tracer_sig or posedge clear) begin
         if(!clear) begin
             row_cnt <= 6'd0;
         end
@@ -42,22 +46,24 @@ module ray_tracer_host(
     end
 
     // generate view tracing ray
-    reg [27:0] init;
+    wire [27:0] init;
     assign init = in_bus[27:0];
-    reg [27:0] directon;
-    view_ray(.view_normal(in_bus[55:28]),.view_dist(in_bus[65:56]), .view_loc({col_cnt,row_cnt}),
+    reg [30:0] directon;
+    view_ray view_ray(.view_normal(in_bus[55:28]),.view_dist(in_bus[65:56]), .view_loc({col_cnt,row_cnt}),
         .view_out(direction));
 
     // trace ray
+    reg [11:0] dbuffer;
     wire tracer_sig;
     wire pixel_collision_sig;
-    ray_tracer(.in_bus(in_bus), .init(init), .dir(direction), 
-        .dout(dout), .tracer_ret(tracer_sig), collision_sig(pixel_collision_sig));
+    ray_tracer ray_tracer(.in_bus(in_bus), .init(init), .dir(direction), 
+        .dout(dbuffer), .tracer_ret(tracer_sig), .collision_sig(pixel_collision_sig));
 
     // pass color data
     always @(posedge tracer_sig) begin
         col_addr <= col_cnt;
         row_addr <= row_cnt;
+        dout <= dbuffer;
     end
 
     // process collision

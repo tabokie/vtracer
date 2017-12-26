@@ -12,13 +12,13 @@ module ray_tracer(
     output reg tracer_ret,
     output reg collision_sig
 );
-    // trace each object4
+    // trace each object
     // set 8 objects with 10-bit output t
-    reg [9:0] t[7:0];
+    reg [79:0] t;
     // object 0: sphere
     wire [49:0] object0;
     wire [9:0] t0;
-    assign t0 = t[0];
+    assign t0 = t[9:0];
     assign object0 = in_bus[`object_end+49 : `object_end];
     ray_tracer_sphere(.init(init),.dir(dir),.object_in(object0),.t_out(t0));
 

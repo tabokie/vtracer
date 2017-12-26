@@ -6,8 +6,8 @@ module control_host(
     input en_right,
     input en_forward,
     input en_backward,
-    output [1:0] rotate_sig,
-    output [1:0] move_sig
+    output reg[1:0] rotate_sig,
+    output reg[1:0] move_sig
 );
     reg [1:0] rotate;
     reg [1:0] move;

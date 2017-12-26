@@ -32,11 +32,11 @@ module top(
     reg [11:0] vga_din;
     wire [5:0] read_row_addr;// 64 8*8 pixel block
     wire [6:0] read_col_addr;// 128 8*8 pixel block
-    wire rdn;
 
     // send to vga
     vga vga0(
         .vga_clk(clkdiv[1]),
+        .clrn(rst),
         .din(vga_din),
         .col_addr(read_col_addr),
         .row_addr(read_row_addr),

@@ -1,6 +1,6 @@
-
 module vga(
     input vga_clk,
+    input clrn,
     input [11:0] din,
     output reg [6:0] col_addr,
     output reg [6:0] row_addr,
@@ -48,12 +48,12 @@ module vga(
     always @ (posedge vga_clk) begin
         row_addr <=  (row[8:0]) / 9'd8; // pixel ram row address
         col_addr <=  col % 9'd8 ;      // pixel ram col address
-        rdn      <= ~read;     // read pixel (active low)
+        //rdn      <= ~read;     // read pixel (active low)
         hs       <=  h_sync;   // horizontal synchronization
         vs       <=  v_sync;   // vertical   synchronization
-        r        <=  rdn ? 4'h0 : d_in[3:0]; // 4-bit red
-        g        <=  rdn ? 4'h0 : d_in[7:4]; // 4-bit green
-        b        <=  rdn ? 4'h0 : d_in[11:8]; // 4-bit blue
+        r        <=  ~read ? 4'h0 : din[3:0]; // 4-bit red
+        g        <=  ~read ? 4'h0 : din[7:4]; // 4-bit green
+        b        <=  ~read ? 4'h0 : din[11:8]; // 4-bit blue
     end
 
 endmodule
