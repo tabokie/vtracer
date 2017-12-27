@@ -7,10 +7,7 @@ module view_ray(
 	input [30:0] view_normal, // d
 	input [7:0] view_dist, // d0
 	input [12:0] view_loc, // (x,y) 7-6
-	output [30:0] view_out,
-	output [19:0] dx_show,
-	output [19:0] dy_show,
-	output [19:0] d_length_show
+	output [30:0] view_out
  );
 
 	// ray generate formula:
@@ -43,8 +40,5 @@ module view_ray(
 
    	assign view_out = {view_out_x[10:0],view_out_y[10:0],view_out_z[8:0]};
 
-	assign dx_show = dx;
-	assign dy_show = dy;
-	assign d_length_show = d_length;
 
 endmodule

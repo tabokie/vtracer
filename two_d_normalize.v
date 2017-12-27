@@ -7,10 +7,10 @@ module two_d_normalize(
 );
     wire [19:0] nmold;
     wire [19:0] nx;
-    signed_to_20b_signed #(.LENGTH(10)) int0(.in(dir[21:11]),.out(nx));
+    signed_to_20b_signed #(.LENGTH(11)) int0(.in(dir[21:11]),.out(nx));
     wire [19:0] ny;
-    signed_to_20b_signed #(.LENGTH(10)) int1(.in(dir[10:0]),.out(ny));
-    mold mold0(.clk(),.x(nx),.y(ny),.z(19'b0),.mold(nmold));
+    signed_to_20b_signed #(.LENGTH(11)) int1(.in(dir[10:0]),.out(ny));
+    mold mold0(.clk(),.x(nx),.y(ny),.z(20'b0),.mold(nmold));
 
     wire [19:0] norx;
     assign norx = nx*d/nmold;

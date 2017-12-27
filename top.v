@@ -40,7 +40,7 @@ module top(
         .din(vga_din),
         .col_addr(read_col_addr),
         .row_addr(read_row_addr),
-        .read_en(rdn),
+        //.read_en(rdn),
         .hs(hs),.vs(vs),
         .r(r),.g(g),.b(b)
     );
@@ -77,6 +77,8 @@ module top(
         .clk(clkdiv[1]),.PS2C(PS2C),.PS2D(PS2D),.ascii(ascii)
     );
 
+    wire [1:0] rotate_sig;
+    wire [1:0] move_sig;
     control_host control_host0(
         .key(ascii),
         .en_left(collision[3]),

@@ -11,23 +11,26 @@ module ray_tracer_sphere(
 	// t = [-d*p-sqrt( (d*p)^2 - d^2*(p^2-r^2)) ] / d^2
 	// d*p(twice)/d^2(twice)/p^2/r^2 is used scalar
 
+	// signed init
+	wire [30:0] signed_init = {1'b0,init[27:18],1'b0,init[17:8],1'b0,init[7:0]};
+
 	// prepare p(e-c)
 	wire [27:0] c;
 	assign c = object_in[27:0];
 	wire [19:0]p_x;
-	signed_to_20b_signed #(.LENGTH(11)) int0(.in(init[30:20] - c[30:20]),.out(p_x));
+	signed_to_20b_signed #(.LENGTH(11)) int0(.in(signed_init[30:20] - c[30:20]),.out(p_x));
 	wire [19:0]p_y;
-	signed_to_20b_signed #(.LENGTH(11)) int1(.in(init[19:9] - c[19:9]),.out(p_y));
+	signed_to_20b_signed #(.LENGTH(11)) int1(.in(signed_init[19:9] - c[19:9]),.out(p_y));
 	wire [19:0]p_z;
-	signed_to_20b_signed #(.LENGTH(9)) int2(.in(init[8:0] - c[8:0]),.out(p_z));
+	signed_to_20b_signed #(.LENGTH(9)) int2(.in(signed_init[8:0] - c[8:0]),.out(p_z));
 
 	// prepare d
 	wire [19:0]d_x;
-	signed_to_20b_signed #(.LENGTH(11)) int3(.in(init[30:20]),.out(d_x));
+	signed_to_20b_signed #(.LENGTH(11)) int3(.in(signed_init[30:20]),.out(d_x));
 	wire [19:0]d_y;
-	signed_to_20b_signed #(.LENGTH(11)) int4(.in(init[19:9]),.out(d_y));
+	signed_to_20b_signed #(.LENGTH(11)) int4(.in(signed_init[19:9]),.out(d_y));
 	wire [19:0]d_z;
-	signed_to_20b_signed #(.LENGTH(9)) int5(.in(init[8:0]),.out(d_z));
+	signed_to_20b_signed #(.LENGTH(9)) int5(.in(signed_init[8:0]),.out(d_z));
 
 	// prepare r
 	wire [19:0]r;

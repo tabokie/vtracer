@@ -7,7 +7,7 @@
 module ray_tracer(
     input [127:0] in_bus,
     input [27:0] init,
-    input [27:0] dir,
+    input [30:0] dir,
     output reg [11:0] dout,
     output reg tracer_ret,
     output reg collision_sig
@@ -19,8 +19,8 @@ module ray_tracer(
     wire [49:0] object0;
     wire [9:0] t0;
     assign t0 = t[9:0];
-    assign object0 = in_bus[`object_end+49 : `object_end];
-    ray_tracer_sphere(.init(init),.dir(dir),.object_in(object0),.t_out(t0));
+    assign object0 = in_bus[115 : 68];
+    ray_tracer_sphere sphere_tracer0(.init(init),.dir(dir),.object_in(object0),.t_out(t0));
 
     // solve minimum intersection
     reg [2:0] min_id;

@@ -3,7 +3,7 @@ module vga(
     input clrn,
     input [11:0] din,
     output reg [6:0] col_addr,
-    output reg [6:0] row_addr,
+    output reg [5:0] row_addr,
     output reg hs,
     output reg vs,
     output reg [3:0] r,

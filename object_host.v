@@ -30,45 +30,46 @@ module object_host(
 
     // rotate: normal(x,y,0) + delta_normal(y*4/|d|,x*4/|d|,0)
     reg [7:0] move_range = 8'b00000100;
-    reg [9:0] mx;
-    reg [9:0] my;
-    two_d_normalize norm0(.d(move_range),.dir(view_init[30:9]),
+    reg [10:0] mx;
+    reg [10:0] my;
+    two_d_normalize norm0(.d(move_range),.dir(view_normal[30:9]),
         .normalized_x(mx),.normalized_y(my));
 
     reg [7:0] rotate_range = 8'b00000100;
-    reg [9:0] rx;
-    reg [9:0] ry;
-    two_d_normalize norm1(.d(rotate_range),.dir({view_init[19:9],view_init[30:20]}),
+    reg [10:0] rx;
+    reg [10:0] ry;
+    two_d_normalize norm1(.d(rotate_range),.dir({view_normal[19:9],view_normal[30:20]}),
         .normalized_x(rx),.normalized_y(ry));
 
+    reg change;
     // l_r_f_b
     always @(posedge clk)begin
         case(rotate)
             2'b01:begin
                 // right: x+=dy,y-=dx
-                view_init[30:20] <= view_init[30:20] + ry;
-                view_init[19:9] <= view_init[19:9] - rx;
+
+                {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} + ry);
+                {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} - rx);
             end
             2'b10:begin
                 // left: x-=dy,y+=dx
-                view_init[30:20] <= view_init[30:20] - ry;
-                view_init[19:9] <= view_init[19:9] + rx;
+                {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} - ry);
+                {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} + rx);
             end
         endcase
         case(move)
             2'b01:begin
                 // backward: x+=dx,y+=dy
-                view_init[30:20] <= view_init[30:20] + mx;
-                view_init[19:9] <= view_init[19:9] + my;
+                {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} + my);
+                {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} + mx);
             end
             2'b10:begin
                 // forward: x-=dx,y-=dy
-                view_init[30:20] <= view_init[30:20] - mx;
-                view_init[19:9] <= view_init[19:9] - my;
+                {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} - my);
+                {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} - mx);
             end
         endcase
     end
-
 
 endmodule
 

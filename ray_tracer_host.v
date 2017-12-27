@@ -5,7 +5,7 @@ module ray_tracer_host(
     output reg [6:0] col_addr,
     output reg [5:0] row_addr,
     output reg [11:0] dout,
-    output reg [3:0] collosion_sig
+    output reg [3:0] collision_sig
 );
     // function: visit each pixel at one time, trace and shade
 
@@ -48,15 +48,15 @@ module ray_tracer_host(
     // generate view tracing ray
     wire [27:0] init;
     assign init = in_bus[27:0];
-    reg [30:0] directon;
-    view_ray view_ray(.view_normal(in_bus[55:28]),.view_dist(in_bus[65:56]), .view_loc({col_cnt,row_cnt}),
+    reg [30:0] direction = 31'b0;
+    view_ray view_ray0(.clk(clk),.view_normal(in_bus[58:28]),.view_dist(in_bus[66:59]), .view_loc({col_cnt,row_cnt}),
         .view_out(direction));
 
     // trace ray
     reg [11:0] dbuffer;
     wire tracer_sig;
     wire pixel_collision_sig;
-    ray_tracer ray_tracer(.in_bus(in_bus), .init(init), .dir(direction), 
+    ray_tracer ray_tracer0(.in_bus(in_bus), .init(init), .dir(direction), 
         .dout(dbuffer), .tracer_ret(tracer_sig), .collision_sig(pixel_collision_sig));
 
     // pass color data
