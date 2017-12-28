@@ -1,3 +1,24 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    13:54:49 12/23/2017 
+// Design Name: 
+// Module Name:    view_ray 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+`include "vga_scan_param_h.v"
 // \input Normal vector(vector)
 // \input View dist(min_dist)
 // \input Canvas location(2-dimension coord)
@@ -29,10 +50,10 @@ module view_ray(
 	//  and x,y
 	wire [19:0] view_x;
 	assign view_x[19:7] = 0;
-	assign view_x[6:0] = 7'b1000001 + view_loc[12:6];
+	assign view_x[6:0] = -`COL_MID + view_loc[12:6];
 	wire [19:0] view_y;
 	assign view_y[19:6] = 0;
-	assign view_y[5:0] = 6'b011111 - view_loc[5:0];
+	assign view_y[5:0] = `ROW_MID - view_loc[5:0];
 
 	wire [19:0] view_out_x = (long_view_dist * dx + view_x * dy) / d_length;
 	wire [19:0] view_out_y = (long_view_dist * dy + view_x * dx) / d_length;

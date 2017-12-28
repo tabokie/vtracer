@@ -1,3 +1,23 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    17:11:28 12/23/2017 
+// Design Name: 
+// Module Name:    keyboard 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 module keyboard(
 	input clk,
 	input PS2C,
@@ -14,7 +34,7 @@ module keyboard(
 	reg shift, ctrl, alt;
 	reg capslock, numlock;
 
-	always @(posedge clk)// 鍙栧�奸槻骞叉壈锛屽弬鑰冧功涓婏紝涓嶅仛璧樿堪
+	always @(posedge clk)// 取值防干扰，参考书上，不做赘述
 	begin
 		ps2c_filter[7] <= PS2C;
 		ps2c_filter[6:0] <= ps2c_filter[7:1];

@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date:    16:02:06 12/26/2017 
+// Create Date:    14:49:23 12/23/2017 
 // Design Name: 
-// Module Name:    signed_to_20b_signed 
+// Module Name:    scene_ram_h 
 // Project Name: 
 // Target Devices: 
 // Tool versions: 
@@ -18,20 +18,4 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-// link to wire type
-module signed_to_20b_signed(
-	input [LENGTH-1:0] in,
-	output reg [19:0] out
-);
 
-	parameter LENGTH = 10;
-
-	always @(in) begin
-		out[LENGTH-2:0] = in[LENGTH-2:0];
-		case(in[LENGTH-1])
-		1'b1:out[19:LENGTH-1] = -1;
-		1'b0:out[19:LENGTH-1] = 0;
-		endcase
-	end
-
-endmodule

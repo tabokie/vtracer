@@ -1,5 +1,26 @@
-// latency : 2
-// input: signed int
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    13:10:35 12/22/2017 
+// Design Name: 
+// Module Name:    mold 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//	Latency: 2
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
 module mold(
 	input clk,
 	input [19:0] x,

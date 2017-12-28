@@ -1,3 +1,23 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    13:04:26 12/23/2017 
+// Design Name: 
+// Module Name:    object_host 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 `define BLACK 12'b0
 `define WHITE 12'b111111111111
 module object_host(
@@ -10,7 +30,7 @@ module object_host(
     // min_dist: 8-bit (<256)
     // max_dist: 11-bit
     // int: 11-bit / 9-bit
-    // point: 10-bit * 10-bit * 8-bit(height) = 28([27:0])
+    // point: 10-bit * 10-bit * 8-bit(height) = 28([27:0]) x([27:18]), y([17:8]), z([7:0])
     // vector: 11-bit * 11-bit * 9-bit = 31([30:0]) x([30:20]), y([19:9]), z([8:0])
 
     // player: 28 + 31 + 8 + 1 = 68
@@ -18,8 +38,6 @@ module object_host(
     reg [30:0] view_normal = 31'b1-00000000001-000000000; // vector: x11_y11_z9
     reg [7:0] view_dist = 8'b10; // min_dist: 8
     reg view_light_en = 1'b0; // if also a light obj
-
-
     assign out_bus[67:0] = {view_light_en,view_dist,view_normal,view_init};
 
     // sphere: 28 + 8 + 12 = 48
@@ -30,24 +48,24 @@ module object_host(
 
     // rotate: normal(x,y,0) + delta_normal(y*4/|d|,x*4/|d|,0)
     reg [7:0] move_range = 8'b00000100;
-    reg [10:0] mx;
-    reg [10:0] my;
+    wire [10:0] mx;
+    wire [10:0] my;
     two_d_normalize norm0(.d(move_range),.dir(view_normal[30:9]),
         .normalized_x(mx),.normalized_y(my));
 
     reg [7:0] rotate_range = 8'b00000100;
-    reg [10:0] rx;
-    reg [10:0] ry;
+    wire [10:0] rx;
+    wire [10:0] ry;
     two_d_normalize norm1(.d(rotate_range),.dir({view_normal[19:9],view_normal[30:20]}),
         .normalized_x(rx),.normalized_y(ry));
 
+    // unused bit
     reg change;
     // l_r_f_b
     always @(posedge clk)begin
         case(rotate)
             2'b01:begin
                 // right: x+=dy,y-=dx
-
                 {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} + ry);
                 {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} - rx);
             end
@@ -72,4 +90,6 @@ module object_host(
     end
 
 endmodule
+
+
 

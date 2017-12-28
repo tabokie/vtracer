@@ -1,7 +1,25 @@
-// move: a_b a forward, b backward
-// rotate: a_b a left, b right
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    13:03:29 12/23/2017 
+// Design Name: 
+// Module Name:    control_host 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 module control_host(
-    input [7:0] key,
+    input [7:0]key,
     input en_left,
     input en_right,
     input en_forward,
@@ -25,11 +43,40 @@ module control_host(
         endcase
     end
 
-    always@(*) begin
-        if(en_left)rotate_sig[1] <= rotate[1];
-        if(en_right)rotate_sig[0] <= rotate[0];
-        if(en_forward)move_sig[1] <= move[1];
-        if(en_backward)move_sig[0] <= move[0];
+    always @(en_left)begin
+        if(en_left)begin
+            rotate_sig[1] <= rotate[1];
+        end
+        else begin
+            rotate_sig[1] <= 0;
+        end
+    end
+
+    always @(en_right)begin
+        if(en_right)begin
+            rotate_sig[0] <= rotate[0];
+        end
+        else begin
+            rotate_sig[0] <= 0;
+        end
+    end
+
+    always @(en_forward)begin
+        if(en_forward)begin
+            move_sig[1] <= move[1];
+        end
+        else begin
+            move_sig[1] <= 0;
+        end
+    end
+
+    always @(en_backward)begin
+        if(en_backward)begin
+            move_sig[0] <= move[0];
+        end
+        else begin
+            move_sig[1] <= 0;
+        end
     end
 
 endmodule

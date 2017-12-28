@@ -1,9 +1,29 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    20:57:40 12/26/2017 
+// Design Name: 
+// Module Name:    two_d_normalize 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
 // specially for vector (x,y,0)
 module two_d_normalize(
     input [7:0] d,
     input [21:0] dir,
-    output [10:0] normalized_x,
-    output [10:0] normalized_y
+    output reg [10:0] normalized_x,
+    output reg [10:0] normalized_y
 );
     wire [19:0] nmold;
     wire [19:0] nx;
@@ -17,9 +37,10 @@ module two_d_normalize(
     wire [19:0] nory;
     assign nory = ny*d/nmold;
 
-    assign normalized_x[9:0] = nx[9:0];
-    assign normalized_x[10] = norx[19]==1'b1 ? 1'b1 : 1'b0;
-    assign normalized_y[9:0] = ny[9:0];
-    assign normalized_x[10] = nory[19]==1'b1 ? 1'b1 : 1'b0;
-
+    always @(*)begin
+        normalized_x[9:0] = nx[9:0];
+        normalized_x[10] = norx[19]==1'b1 ? 1'b1 : 1'b0;
+        normalized_y[9:0] = ny[9:0];
+        normalized_x[10] = nory[19]==1'b1 ? 1'b1 : 1'b0;
+    end
 endmodule
