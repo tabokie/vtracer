@@ -21,10 +21,19 @@
 
 module ray_tracer_sphere(
 	input clk,
+	input rst,
 	input [27:0] init,
 	input [30:0] dir,
 	input [47:0] object_in, // 12(color)-8(r)-28(center) = 48
 	output reg[9:0] t_out
+	// test output
+	// ,
+	// output [19:0] dp,
+	// output [19:0] dd,
+	// output [19:0] pp,
+	// output [19:0] rr,
+	// output [19:0] sqrt_res,
+	// output [19:0] final_res
 );
 
 	// sphere trace formula:
@@ -33,6 +42,7 @@ module ray_tracer_sphere(
 	// t = [-d*p-sqrt( (d*p)^2 - d^2*(p^2-r^2)) ] / d^2
 	// d*p(twice)/d^2(twice)/p^2/r^2 is used scalar
 
+	// Combinational Part //
 	// signed init
 	wire [30:0] signed_init = {1'b0,init[27:18],1'b0,init[17:8],1'b0,init[7:0]};
 
@@ -48,18 +58,17 @@ module ray_tracer_sphere(
 
 	// prepare d
 	wire [19:0]d_x;
-	signed_to_20b_signed #(.LENGTH(11)) int3(.in(signed_init[30:20]),.out(d_x));
+	signed_to_20b_signed #(.LENGTH(11)) int3(.in(dir[30:20]),.out(d_x));
 	wire [19:0]d_y;
-	signed_to_20b_signed #(.LENGTH(11)) int4(.in(signed_init[19:9]),.out(d_y));
+	signed_to_20b_signed #(.LENGTH(11)) int4(.in(dir[19:9]),.out(d_y));
 	wire [19:0]d_z;
-	signed_to_20b_signed #(.LENGTH(9)) int5(.in(signed_init[8:0]),.out(d_z));
+	signed_to_20b_signed #(.LENGTH(9)) int5(.in(dir[8:0]),.out(d_z));
 
 	// prepare r
 	wire [19:0]r;
 	assign r[19:8] = 0;
 	assign r[7:0] = object_in[35:28];
 	
-
 	wire [19:0]dp;
 	assign dp = d_x*p_x+d_y*p_y+d_z*p_z;
 	wire [19:0]dd; 
@@ -71,20 +80,23 @@ module ray_tracer_sphere(
 
 	wire [19:0]sqrt_res;
 	assign sqrt_res[19:11] = 0;
-	sqrt_20 ins(.x_in(dp*dp-dd*(pp-rr)),.x_out(sqrt_res[10:0]),.clk(clk));
+	sqrt_20 sqrt_ins(.x_in(dp*dp-dd*(pp-rr)),.x_out(sqrt_res[10:0]),.clk(clk));
 
-	reg [19:0]final_res;
-	always @(sqrt_res)begin
-		final_res = (- dp - sqrt_res) / dd;
-	end
-	
-	always @(final_res)begin
-		case(final_res[19])
-		1'b1:t_out = 10'b1111111111;
-		1'b0:t_out = final_res[9:0];
-		endcase
-	end
+	wire [19:0] final_res;
+	wire [19:0] div_res;
+	ip_div div_ins(.clk(clk),.rfd(),
+		.dividend((~dp+1 + ~sqrt_res+1)),.divisor(dd),
+		.quotient(div_res),.fractional());
+	// assign final_res = dd==0 ? -1 : (~dp+1 + ~sqrt_res+1) / dd ;
+	assign final_res = dd==0 ? -1 : div_res;
 
+	// Sequential Part //
+	always @(posedge clk or negedge rst)begin
+		if(!rst || final_res[19:10] != 0)begin
+			t_out <= 10'b1111111111;
+		end
+		else t_out <= final_res[9:0];
+	end
 endmodule
 
 

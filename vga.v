@@ -21,7 +21,7 @@
 `include "vga_scan_param_h.v"
 module vga(
     input vga_clk,
-    input clr,
+    input rst,
     input [11:0] din,
     output reg [`COL_WIDTH-1:0] col_addr,
     output reg [`ROW_WIDTH-1:0] row_addr,
@@ -34,8 +34,8 @@ module vga(
 
     // h_count: VGA horizontal counter (0-799)
     reg [9:0] h_count; // VGA horizontal counter (0-799): pixels
-    always @ (posedge vga_clk or posedge clr) begin
-        if (clr) begin
+    always @ (posedge vga_clk or negedge rst) begin
+        if (!rst) begin
             h_count <= 10'h0;
         end else if (h_count == 10'd799) begin
             h_count <= 10'h0;
@@ -45,8 +45,8 @@ module vga(
     end
     // v_count: VGA vertical counter (0-524)
     reg [9:0] v_count; // VGA vertical   counter (0-524): lines
-    always @ (posedge vga_clk or posedge clr) begin
-        if (clr) begin
+    always @ (posedge vga_clk or negedge rst) begin
+        if (!rst) begin
             v_count <= 10'h0;
         end else if (h_count == 10'd799) begin
             if (v_count == 10'd524) begin

@@ -39,7 +39,7 @@ module mold_test;
 		.x(x), 
 		.y(y), 
 		.z(z), 
-		.mold(mold),
+		.mold(mold)
 	);
 integer i;
 	initial begin

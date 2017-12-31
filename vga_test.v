@@ -26,7 +26,7 @@ module vga_test;
 
 	// Inputs
 	reg vga_clk;
-	reg clr;
+	reg rst;
 	reg [11:0] din;
 
 	// Outputs
@@ -41,7 +41,7 @@ module vga_test;
 	// Instantiate the Unit Under Test (UUT)
 	vga uut (
 		.vga_clk(vga_clk), 
-		.clr(clr), 
+		.rst(rst), 
 		.din(din), 
 		.col_addr(col_addr), 
 		.row_addr(row_addr), 
@@ -56,13 +56,13 @@ module vga_test;
 	initial begin
 		// Initialize Inputs
 		vga_clk = 0;
-		clr = 0;
+		rst = 1;
 		din = 0;
 		#5;
 		// Wait 100 ns for global reset to finish
-		clr = 1;
+		rst = 0;
 		#50;
-      clr = 0;
+      rst = 1;
 		// Add stimulus here
 		for(i=0;i<1000;i=i+1)begin
 			vga_clk = ~vga_clk;

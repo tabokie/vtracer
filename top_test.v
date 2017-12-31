@@ -36,7 +36,11 @@ module top_test;
 	wire [3:0] r;
 	wire [3:0] g;
 	wire [3:0] b;
-	
+	// test
+	wire [10:0] tracer;
+	wire [10:0] vga;
+	wire [31:0] local_clk;
+
 	// Instantiate the Unit Under Test (UUT)
 	top uut (
 		.clk(clk), 
@@ -48,19 +52,24 @@ module top_test;
 		.r(r), 
 		.g(g), 
 		.b(b)
+		// test
+		,
+		.tracer_show(tracer),
+		.vga_show(vga),
+		.local_clk(local_clk)
 	);
 	integer i;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
-		rst = 0;
+		rst = 1;
 		PS2C = 0;
 		PS2D = 0;
 		#5
 		// Wait 100 ns for global reset to finish
-		rst = 1;
-		#50;
 		rst = 0;
+		#50;
+		rst = 1;
       for(i=0;i<100000;i=i+1)begin
 			clk = ~clk;
 			#5;

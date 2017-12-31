@@ -29,28 +29,49 @@ module sphere_tracer_test;
 	reg [30:0] dir;
 	reg [47:0] object_in;
 	reg clk;
-
+	reg rst;
 	// Outputs
 	wire [9:0] t_out;
+
+	// test output
+	wire [19:0] dp;
+	wire [19:0] dd;
+	wire [19:0] pp;
+	wire [19:0] rr;
+	wire [19:0] sqrt_res;
+	wire [19:0] final;
 
 	// Instantiate the Unit Under Test (UUT)
 	ray_tracer_sphere uut (
 		.clk(clk),
+		.rst(rst),
 		.init(init), 
 		.dir(dir), 
 		.object_in(object_in), 
 		.t_out(t_out)
+		// test output
+		// ,
+		// .dp(dp),
+		// .dd(dd),
+		// .pp(pp),
+		// .rr(rr),
+		// .sqrt_res(sqrt_res),
+		// .final_res(final)
 	);
 	integer i;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
+		rst=1;
 		init = 0;
-		dir = 0;
-		object_in = 48'b111111111111-00001000-0000000000-0000100000-00010000;
+		dir = 31'b00000000000_00000000100_000000000;
+		object_in = 48'b111111111111_00001000_0000000000_0000100000_00000000;
 
 		// Wait 100 ns for global reset to finish
 		#100;
+		rst=0;
+		#5;
+		rst=1;
       for(i=0;i<100;i=i+1)begin
 			clk = ~clk;
 			#5;

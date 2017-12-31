@@ -34,7 +34,7 @@ module mold(
 	assign y2 = y*y;
 	wire [19:0] z2;
 	assign z2 = z*z;
-	wire [19:0] sum; 
+	wire [19:0] sum;
 	assign sum = x2+y2+z2;
 	assign mold[19:11] = 0;
 	sqrt_20 ins(
@@ -42,5 +42,4 @@ module mold(
 	  .x_out(mold[10:0]), // output [10 : 0] x_out
 	  .clk(clk) // input clk
 	);
-
 endmodule

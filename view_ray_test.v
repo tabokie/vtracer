@@ -26,6 +26,7 @@ module view_ray_test;
 
 	// Inputs
 	reg clk;
+	reg rst;
 	reg [30:0] view_normal;
 	reg [7:0] view_dist;
 	reg [12:0] view_loc;
@@ -39,19 +40,23 @@ module view_ray_test;
 		.view_normal(view_normal), 
 		.view_dist(view_dist), 
 		.view_loc(view_loc), 
-		.view_out(view_out),
+		.view_out(view_out)
 	);
 	
 	integer i;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
+		rst = 1;
 		view_normal = 0;
 		view_dist = 0;
 		view_loc = 0;
 
 		// Wait 100 ns for global reset to finish
-      
+      	#5;
+      	rst = 0;
+      	#5;
+      	rst = 1;
 		// Add stimulus here
 		
 		for(i=0;i<=1000;i=i+1)begin
