@@ -37,9 +37,11 @@ module top_test;
 	wire [3:0] g;
 	wire [3:0] b;
 	// test
-	wire [10:0] tracer;
-	wire [10:0] vga;
-	wire [31:0] local_clk;
+	wire [12:0] tracer;
+	wire [12:0] vga;
+	wire [11:0] vga_in;
+	wire [11:0] tracer_out;
+	//wire [31:0] local_clk;
 
 	// Instantiate the Unit Under Test (UUT)
 	top uut (
@@ -56,9 +58,10 @@ module top_test;
 		,
 		.tracer_show(tracer),
 		.vga_show(vga),
-		.local_clk(local_clk)
+		.tracer_out_show(tracer_out),
+		.vga_in_show(vga_in)
+		//.local_clk(local_clk)
 	);
-	integer i;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
@@ -70,7 +73,7 @@ module top_test;
 		rst = 0;
 		#50;
 		rst = 1;
-      for(i=0;i<100000;i=i+1)begin
+      forever begin
 			clk = ~clk;
 			#5;
 		end

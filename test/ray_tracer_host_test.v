@@ -36,13 +36,17 @@ module ray_tracer_host_test;
 	wire [3:0] collision_sig;
 
 	// test out
-	wire [6:0] col_cnt;
-	wire [5:0] row_cnt;
-	wire [30:0] direction;
-	wire [11:0] dbuffer;
-	wire [2:0] i_show;
-	wire [3:0] j_show;
+	wire [30:0] view;
+	wire [11:0] color;
+	wire [6:0] i_show;
+	wire [5:0] k_show;
+	wire [7:0] j_show;
+	wire [9:0] t_show;
 
+	wire [19:0] d_mold_show;
+    wire [19:0] delta_show;
+    wire [19:0] div_res;
+    wire [19:0] final_show;
 	// Instantiate the Unit Under Test (UUT)
 	ray_tracer_host uut (
 		.clk(clk), 
@@ -52,16 +56,18 @@ module ray_tracer_host_test;
 		.row_addr(row_addr), 
 		.dout(dout), 
 		.collision_sig(collision_sig)
-		// test output
-		,
-		.col_before(col_cnt),
-		.row_before(row_cnt),
-		.direction(direction),
-		.dbuffer(dbuffer),
-		.i_show(i_show),
-		.j_show(j_show)
+		,.view_show(view)
+		,.color_show(color)
+		,.i_show(i_show)
+		,.k_show(k_show)
+		,.j_show(j_show)
+		,.t_show(t_show)
+		,.d_mold_show(d_mold_show)
+        ,.delta_show(delta_show)
+        ,.div_res(div_res)
+        ,.final_show(final_show)
 	);
-	integer i;
+	integer i = 0;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
@@ -72,11 +78,19 @@ module ray_tracer_host_test;
 		// Wait 100 ns for global reset to finish
 		#30;
 		rst = 1;
-        in_bus = {12'b0,48'b111111111111-00001000-0000000000-0000100000-00010000,40'b0-00000011,31'b0011111111100111111111000000000,28'b0};
+      	// in_bus = {12'b0,48'b111111111111_00010000_0000000000_0000100000_00000000,9'b0_00000011,31'b00000000000_00000000001_000000000,28'b0};
 		// Add stimulus here
-		for(i=0;i<1000;i=i+1)begin
+		forever begin
 			clk = ~clk;
 			#5;
+			i = i+1;
+			if(i==100)begin
+      			rst = 0;
+			end
+			if(i==104)begin
+				rst = 1;
+      			in_bus = {12'b0,48'b111111111111_00010000_0000000000_0000100000_00000000,9'b0_00000011,31'b00000000000_00000000001_000000000,28'b0};
+			end
 		end
 	end
       

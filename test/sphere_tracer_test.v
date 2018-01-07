@@ -32,14 +32,10 @@ module sphere_tracer_test;
 	reg rst;
 	// Outputs
 	wire [9:0] t_out;
-
-	// test output
-	wire [19:0] dp;
-	wire [19:0] dd;
-	wire [19:0] pp;
-	wire [19:0] rr;
-	wire [19:0] sqrt_res;
-	wire [19:0] final;
+	wire [19:0] d_mold_show;
+	wire [19:0] delta_show;
+	wire [19:0] div_res;
+	wire [19:0] final_show;
 
 	// Instantiate the Unit Under Test (UUT)
 	ray_tracer_sphere uut (
@@ -49,15 +45,12 @@ module sphere_tracer_test;
 		.dir(dir), 
 		.object_in(object_in), 
 		.t_out(t_out)
-		// test output
-		// ,
-		// .dp(dp),
-		// .dd(dd),
-		// .pp(pp),
-		// .rr(rr),
-		// .sqrt_res(sqrt_res),
-		// .final_res(final)
+		,.d_mold_show(d_mold_show)
+		,.delta_show(delta_show)
+		,.div_res_show(div_res)
+		,.final_show(final_show)
 	);
+
 	integer i;
 	initial begin
 		// Initialize Inputs
@@ -65,15 +58,23 @@ module sphere_tracer_test;
 		rst=1;
 		init = 0;
 		dir = 31'b00000000000_00000000100_000000000;
-		object_in = 48'b111111111111_00001000_0000000000_0000100000_00000000;
+		dir = 31'b00000000001_00000000111_000000001;
+		object_in = 48'b111111111111_00010000_0000000000_0000100000_00000000;
 
 		// Wait 100 ns for global reset to finish
 		#100;
 		rst=0;
-		#5;
-		rst=1;
-      for(i=0;i<100;i=i+1)begin
+      for(i=0;i<5000;i=i+1)begin
 			clk = ~clk;
+			if(i==99)begin
+				dir = 31'b00000000001_00000100000_000000001;
+			end
+			if(i==100)begin
+				rst = 1;
+			end
+			if(i==200)begin
+				dir = 31'b1111110100000000000011000011100;
+			end
 			#5;
 		end
 		// Add stimulus here

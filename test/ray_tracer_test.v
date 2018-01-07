@@ -35,8 +35,8 @@ module ray_tracer_test;
 	wire [11:0] dout;
 	wire collision_sig;
 	// test out
-	wire [79:0] t_show;
-	wire [2:0] min_show;
+	// wire [79:0] t_show;
+	// wire [2:0] min_show;
 
 	// Instantiate the Unit Under Test (UUT)
 	ray_tracer uut (
@@ -48,16 +48,16 @@ module ray_tracer_test;
 		.dout(dout), 
 		.collision_ret(collision_sig)
 		// test out
-		,
-		.t_show(t_show),
-		.min_show(min_show)
+		// ,
+		// .t_show(t_show)
+		//.min_show(min_show)
 	);
 	integer i;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
 		rst = 1;
-		in_bus = {12'b0,48'b111111111111_00001000_0000000000_0000100000_00000100,68'b0};
+		in_bus = {12'b0,48'b111111111111_00001000_0000000000_0000100000_00000000,68'b0};
 		init = 0;
 		dir=0;
 		// Wait 100 ns for global reset to finish
@@ -69,13 +69,14 @@ module ray_tracer_test;
         	clk = ~clk;
         	#5;
         	if(i==20)begin
-				dir = 31'b00000000000_00000000100_000000000;
+				dir = 31'b00000000000_00000000001_000000000;
         	end
-        	if(i==50)begin
+        	if(i==150)begin
         		dir = 0;
         	end
-        	if(i==80)begin
-				dir = 31'b00000000000_00000000100_000000000;
+        	if(i==380)begin
+				dir = 31'b1111110011000000000011111100110;
+				//dir = 31'b00000000100_01100000001_000000000;
         	end
         end
 		// Add stimulus here

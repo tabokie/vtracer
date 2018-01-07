@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // specially for vector (x,y,0)
 module two_d_normalize(
+    input clk,
     input [7:0] d,
     input [21:0] dir,
     output reg [10:0] normalized_x,
@@ -30,7 +31,7 @@ module two_d_normalize(
     signed_to_20b_signed #(.LENGTH(11)) int0(.in(dir[21:11]),.out(nx));
     wire [19:0] ny;
     signed_to_20b_signed #(.LENGTH(11)) int1(.in(dir[10:0]),.out(ny));
-    mold mold0(.clk(),.x(nx),.y(ny),.z(20'b0),.mold(nmold));
+    mold mold0(.clk(clk),.x(nx),.y(ny),.z(20'b0),.mold(nmold));
 
     wire [19:0] norx;
     assign norx = nx*d/nmold;

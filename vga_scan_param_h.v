@@ -9,9 +9,9 @@
 // row addr width (2^6 > 60)
 `define ROW_WIDTH 6
 // the middle col axis of canvas
-`define COL_MID 29
+`define COL_MID 7'd39
 // the middle row axis of canvas
-`define ROW_MID 39
+`define ROW_MID 6'd29
 // col edge size
 `define COL_EDGE 0 
 // row edge size

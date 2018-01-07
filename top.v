@@ -24,38 +24,53 @@ module top(
     input rst,// active low
     input PS2C,
     input PS2D,
+    input [3:0] BTN,
+
+    input [15:0] SW,
 
     output hs,
     output vs,
     output [3:0] r,
     output [3:0] g,
-    output [3:0] b
-    // test
+    output [3:0] b,
+    output buzzer
+	// runtime test
     ,
-    output [`ROW_WIDTH+`COL_WIDTH-1:0] tracer_show,
-    output [`ROW_WIDTH+`COL_WIDTH-1:0] vga_show,
-    output [31:0] local_clk
+    output [7:0] LED
 );
     // clkdiv //
     reg [31:0] clkdiv = 0;
     always@( posedge clk) begin
         clkdiv <= clkdiv + 1'b1;
     end
-        assign local_clk = clkdiv;
+
+    assign buzzer = 1'b1;
+
+    wire RST_OK;
+    AntiJitter #(4) anti(.clk(clkdiv[15]), .I(rst), .O(RST_OK));
+
+    wire [15:0] SW_ok;
+    AntiJitter #(4) anti1[15:0](.clk(clkdiv[15]), .I(SW), .O(SW_ok)) ;
+
+    wire [3:0] BTN_OK;
+    AntiJitter #(4) anti2[3:0](.clk(clkdiv[15]), .I(BTN), .O(BTN_OK)) ;
 
     // Input: keyboard //
     // keyboard routine >
     wire [7:0] ascii;
     keyboard kbd0(
-        .clk(clkdiv[1]),.PS2C(PS2C),.PS2D(PS2D),.ascii(ascii)
+        .clk(clk),.PS2C(PS2C),.PS2D(PS2D),.ascii(ascii)
     );  
+
 
     // to Player Control //
     wire [3:0] collision;
     wire [1:0] rotate_sig;
     wire [1:0] move_sig;
     control_host control_host0(
-        .key(ascii),
+        .clk(clk),
+        .rst(RST_OK),
+        .key(BTN_OK),
         .en_left(collision[3]),
         .en_right(collision[2]),
         .en_forward(collision[1]),
@@ -65,7 +80,7 @@ module top(
     );
 
     // to Object Ram //
-    // io addr
+    // io addr >>
     // write: tracer
     wire [`ROW_WIDTH+`COL_WIDTH-1:0] tracer_write_addr;
     // read: vga
@@ -77,55 +92,68 @@ module top(
     wire [`COL_WIDTH-1:0] read_col_addr;// 80 8*8 pixel block
     assign tracer_write_addr = {write_col_addr,write_row_addr};
     assign vga_read_addr = {read_col_addr,read_row_addr};
-        assign vga_show = vga_read_addr;
-        assign tracer_show = tracer_write_addr;
-    // io data
+
+    // io data >>
     // write: from tracer
     wire [11:0] tracer_dout;
     // read: to vga api
     wire [11:0] vga_din;
     dual_port_ram #(.WIDTH(`ROW_WIDTH+`COL_WIDTH),.LENGTH(12)) pixelRAM(
-        // .enable(en_ram),
-        .clk(clkdiv[0]),
-        .rst(rst),
+        .clk(clk),
+        .rst(RST_OK),
         .write_addr(tracer_write_addr),
         .read_addr(vga_read_addr),
         .din(tracer_dout),
         .dout(vga_din)
     );
+    // ip_ram pixel_ram(
+    //     .clka(clk),
+    //     .wea(1'b1),
+    //     .addra(tracer_write_addr),
+    //     .dina(tracer_dout),
+    //     .clkb(clk),
+    //     .addrb(vga_read_addr),
+    //     .doutb(vga_din)
+    // );
 
     // which link to Tracer //
-    wire [127:0] object_ram_bus;
+    wire [179:0] object_ram_bus;
     ray_tracer_host ray_tracer_host0(
-        .clk(clkdiv[0]),
-        .rst(rst),
+        .clk(clkdiv[1]),
+        .rst(RST_OK),
         .in_bus(object_ram_bus),
         .col_addr(write_col_addr),
         .row_addr(write_row_addr),
         .dout(tracer_dout),
         .collision_sig(collision)
+        ,.max_add({5'd0,SW_ok[2:1]})
+        ,.second_add({4'd0,SW_ok[4:3]})
+        ,.total_add({5'd0,SW_ok[7:5]})
     );
+
 
     // and VGA //
     vga vga0(
         .vga_clk(clkdiv[1]),
-        .rst(rst),
+        .rst(RST_OK),
         .din(vga_din),
         .col_addr(read_col_addr),
         .row_addr(read_row_addr),
-        //.read_en(rdn),
         .hs(hs),.vs(vs),
         .r(r),.g(g),.b(b)
     );
 
     // with Obj Sys //
     object_host object_host0(
-        .clk(clkdiv[0]),
+        .clk(clkdiv[15]),
+        .rst(RST_OK),
         .rotate(rotate_sig),
         .move(move_sig),
         .out_bus(object_ram_bus)
     );
  
+    assign LED = {move_sig,rotate_sig,collision};//8'hff;
+
 endmodule
 
 

@@ -4,15 +4,15 @@
 // Company: 
 // Engineer:
 //
-// Create Date:   21:32:42 12/29/2017
-// Design Name:   div
-// Module Name:   E:/code/verilog/first_shooter/d_first_shooter/div_test.v
-// Project Name:  d_first_shooter
+// Create Date:   16:58:57 01/05/2018
+// Design Name:   user_div
+// Module Name:   E:/code/verilog/first_shooter/test_newsrc_newboard/user_div_test.v
+// Project Name:  test_newsrc_newboard
 // Target Device:  
 // Tool versions:  
 // Description: 
 //
-// Verilog Test Fixture created by ISE for module: div
+// Verilog Test Fixture created by ISE for module: user_div
 //
 // Dependencies:
 // 
@@ -22,52 +22,40 @@
 // 
 ////////////////////////////////////////////////////////////////////////////////
 
-module div_test;
+module user_div_test;
 
 	// Inputs
 	reg clk;
-	reg rst;
 	reg [19:0] dividend;
 	reg [19:0] divisor;
 
 	// Outputs
-	wire [19:0] quo;
-
-	// test
-	wire [5:0] cur;
-	wire [39:0] pool;
-	wire local_rst;
+	wire [19:0] quotient;
+	wire done_sig;
 
 	// Instantiate the Unit Under Test (UUT)
-	div uut (
+	user_div uut (
 		.clk(clk), 
-		.rst(rst), 
 		.dividend(dividend), 
 		.divisor(divisor), 
-		.quo(quo)
-		// test
-		,
-		.cur_show(cur),
-		.pool_show(pool),
-		.rst_show(local_rst)
+		.quotient(quotient), 
+		.done_sig(done_sig)
 	);
-	integer i;
+
 	initial begin
 		// Initialize Inputs
 		clk = 0;
-		rst = 1;
-		dividend = 19;
-		divisor = 4;
-		#5;
-		rst = 0;
+		dividend = 10;
+		divisor = 3;
+
 		// Wait 100 ns for global reset to finish
-		#10;
-		rst = 1;
-		// Add stimulus here
-		for(i=0;i<30;i=i+1)begin
+		#100;
+      forever begin
 			clk = ~clk;
 			#5;
 		end
+		// Add stimulus here
+
 	end
       
 endmodule

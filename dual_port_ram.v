@@ -24,31 +24,52 @@ module dual_port_ram(
     input [WIDTH-1:0] write_addr,
     input [WIDTH-1:0] read_addr,
     input [LENGTH-1:0] din,
-    output [LENGTH-1:0] dout
+    output reg [LENGTH-1:0] dout
 );
 
     // LENGTH: word length
     // WIDTH: addr width
-    parameter WIDTH = 4;
-    parameter LENGTH = 8;
+    parameter WIDTH = 4;// 13
+    parameter LENGTH = 8;// 12
 
     // regs as ram
-    reg [LENGTH-1:0] ram [2**WIDTH-1:0];
+    reg [LENGTH-1:0] ram [2**(WIDTH)-1:0];
 
-    // reset
-    integer i;
-    always @(posedge rst)begin
-        for(i=0;i<=2**(WIDTH)-1;i=i+1)begin
-            ram[i] = 0;
-        end
-    end
+    always @(posedge clk)begin
 
-    // ram write
-    always @(posedge clk) begin
         ram[write_addr] <= din;
+        // refresh_ram[write_addr] <= (din!=12'h000) ? 3'b0 : refresh_ram[write_addr] + 3'b1;
+        // ram[write_addr] <= (din!=12'h000||refresh_ram[write_addr]==3'd7) ? din : ram[write_addr];
     end
-    // ram read
-    assign dout = ram[read_addr];
+
+    always @(posedge clk)begin
+        dout <= ram[read_addr];// 12'hffff
+    end
 
 endmodule 
 
+// module dual_port_ram(
+//     input clk,
+//     input rst,
+//     input [WIDTH-1:0] write_addr,
+//     input [WIDTH-1:0] read_addr,
+//     input [LENGTH-1:0] din,
+//     output [LENGTH-1:0] dout
+// );
+
+//     // LENGTH: word length
+//     // WIDTH: addr width
+//     parameter WIDTH = 4;
+//     parameter LENGTH = 8;
+
+//     // regs as ram
+//     reg [LENGTH-1:0] ram [2**WIDTH-1:0];
+
+//     // ram write
+//     always @(posedge clk) begin
+//         ram[write_addr] <= din;
+//     end
+//     // ram read
+//     assign dout = ram[read_addr];
+
+// endmodule 

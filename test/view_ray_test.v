@@ -33,17 +33,32 @@ module view_ray_test;
 
 	// Outputs
 	wire [30:0] view_out;
-	
+
+	wire [5:0] i_show;
+	wire [19:0] d_length_show;
+	wire [19:0] div_show;
+	wire [19:0] pool1_show;
+	wire [19:0] pool2_show;
+	wire [19:0] pool3_show;
+
 	// Instantiate the Unit Under Test (UUT)
 	view_ray uut (
 		.clk(clk),
+		.rst(rst),
 		.view_normal(view_normal), 
 		.view_dist(view_dist), 
 		.view_loc(view_loc), 
 		.view_out(view_out)
+		// test
+		,.i_show(i_show)
+		,.d_length_show(d_length_show)
+		,.div_show(div_show)
+		,.pool1_show(pool1_show)
+		,.pool2_show(pool2_show)
+		,.pool3_show(pool3_show)
 	);
-	
-	integer i;
+
+	integer j;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
@@ -55,16 +70,23 @@ module view_ray_test;
 		// Wait 100 ns for global reset to finish
       	#5;
       	rst = 0;
-      	#5;
-      	rst = 1;
 		// Add stimulus here
 		
-		for(i=0;i<=1000;i=i+1)begin
+		for(j=0;j<=1000;j=j+1)begin
 			clk = ~clk;
-			if(i==10)begin
-				view_normal = 31'b0011111111100111111111000000000;
+			if(j==9)begin
+				view_normal = 31'b00000000000_00000000001_000000000;
 				view_dist = 3;
-				view_loc = 13'b0111110111111;  
+				view_loc = 13'b0; 
+			end
+			if(j==10)begin
+				rst=1;
+			end
+			if(j==200)begin
+				view_loc = {7'd40,6'd30}; // output : 00000000001_00000000011_111111111
+			end
+			if(j==400)begin
+				view_loc = {7'd15,6'd1}; // output : 0000010100_00000000011_111100010
 			end
 			#10;
 		end

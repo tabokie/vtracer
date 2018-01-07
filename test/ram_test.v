@@ -27,15 +27,15 @@ module ram_test;
 	// Inputs
 	reg clk;
 	reg rst;
-	reg [3:0] write_addr;
-	reg [3:0] read_addr;
-	reg [7:0] din;
+	reg [12:0] write_addr;
+	reg [12:0] read_addr;
+	reg [11:0] din;
 
 	// Outputs
-	wire [7:0] dout;
+	wire [11:0] dout;
 
 	// Instantiate the Unit Under Test (UUT)
-	dual_port_ram uut (
+	dual_port_ram #(.WIDTH(13),.LENGTH(12)) uut (
 		.clk(clk), 
 		.rst(rst), 
 		.write_addr(write_addr), 
@@ -47,17 +47,22 @@ module ram_test;
 	initial begin
 		// Initialize Inputs
 		clk = 0;
-		rst = 0;
+		rst = 1;
 		write_addr = 0;
 		read_addr = 0;
 		din = 1;
-		
+		#5;
+		rst = 0;
+		#5
 		rst = 1;
 		// Wait 100 ns for global reset to finish
 		#100;
       for(i=0;i<1000;i=i+1)begin
 			clk = ~clk;
 			#5;
+			if(i==100)begin
+				din = 10;
+			end
 		end
 		// Add stimulus here
 
