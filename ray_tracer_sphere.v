@@ -18,11 +18,6 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-// // latency : 37
-// // pipeline allowed : 25 (d2+1)
-// `define DIV_LATE 24 // 24
-// `define SQRT_LATE 7 // 7
-
 // latency : 52
 // pipeline allowed : 37 (d2+1)
 `define DIV_LATE 36 
@@ -36,16 +31,9 @@ module ray_tracer_sphere(
 	input [27:0] init,
 	input [30:0] dir,
 	input [47:0] object_in, // 12(color)-8(r)-28(center) = 48
-	output reg[9:0] t_out
-	// ,output [31:0] d_mold_show
-	// ,output [31:0] delta_show
-	// ,output [31:0] div_res_show
-	// ,output [31:0] final_show 
+	output reg[9:0] t_out,
+	output reg[30:0] normal
 );
-	// assign d_mold_show = d_mold_reg;
-	// assign delta_show = delta;
-	// assign div_res_show = div_res;
-	// assign final_show = final_res;
 
 	// sphere trace formula:
 	// denote init as e, dir as d, sphere as c
@@ -69,11 +57,12 @@ module ray_tracer_sphere(
 
 	// prepare d
 	wire [31:0]d_x;
-	signed_expansion #(.LENGTH(11)) int3(.in(dir[30:20]),.out(d_x));
+	assign d_x = {{22{dir[30]}},dir[29:20]};
 	wire [31:0]d_y;
-	signed_expansion #(.LENGTH(11)) int4(.in(dir[19:9]),.out(d_y));
+	assign d_y = {{22{dir[19]}},dir[18:9]};
 	wire [31:0]d_z;
-	signed_expansion #(.LENGTH(9)) int5(.in(dir[8:0]),.out(d_z));
+	assign d_z = {{24{dir[8]}},dir[7:0]};
+
 
 	// prepare r
 	wire [31:0]r;
@@ -228,6 +217,10 @@ module ray_tracer_sphere(
 				t_out <= (final_res[31:10] != 22'b0 || delta_sig_reg_2==1'b1) ? 10'b1111111111 : final_res[9:0];
 				delta_sig_reg_2 <= delta_sig_reg_1;
 
+
+				// directly fetch current data ;))
+				normal <= {   {  {1'b0,init[27:18]}+dir[30:20]*t_normal[10:0]  },   { {1'b0,init[17:8]}+dir[19:9]*t_normal[10:0]  },   {  {1'b0,init[7:0]}+dir[8:0]*t_normal[8:0]   } };
+
 				i <= 6'd6 + `SQRT_LATE;
 			end
 			default:begin
@@ -253,6 +246,10 @@ module ray_tracer_sphere(
 	ip_div div_ins(.clk(clk),.rfd(),
 		.dividend(dividend),.divisor(d_mold_reg),
 		.quotient(div_res),.fractional());
+
+	// extra routine
+	wire [31:0] t_normal;
+	ip_div div_ins1(.clk(clk),.dividend(dividend),.divisor(d_mold_reg*d_mold_reg),.quotient(t_normal),.fractional());
 
 endmodule
 

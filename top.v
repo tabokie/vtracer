@@ -26,42 +26,47 @@ module top(
     input PS2D,
     input [3:0] BTN,
 
-    input [15:0] SW,
+    input [6:0] SW,
 
     output hs,
     output vs,
     output [3:0] r,
     output [3:0] g,
-    output [3:0] b,
+    output [3:0] b，
     output buzzer
 	// runtime test
     ,
     output [7:0] LED
 );
+
     // clkdiv //
     reg [31:0] clkdiv = 0;
     always@( posedge clk) begin
         clkdiv <= clkdiv + 1'b1;
     end
 
+    // deactivate buzzer
     assign buzzer = 1'b1;
 
     wire RST_OK;
+    // assign RST_OK = rst;
     AntiJitter #(4) anti(.clk(clkdiv[15]), .I(rst), .O(RST_OK));
 
-    wire [15:0] SW_ok;
-    AntiJitter #(4) anti1[15:0](.clk(clkdiv[15]), .I(SW), .O(SW_ok)) ;
+    wire [6:0] SW_ok;
+    // assign SW_ok = SW;
+    AntiJitter #(4) anti1[6:0](.clk(clkdiv[15]), .I(SW), .O(SW_ok)) ;
 
     wire [3:0] BTN_OK;
+    // assign BTN_OK = BTN;
     AntiJitter #(4) anti2[3:0](.clk(clkdiv[15]), .I(BTN), .O(BTN_OK)) ;
+
 
     // Input: keyboard //
     // keyboard routine >
-    wire [7:0] ascii;
-    keyboard kbd0(
-        .clk(clk),.PS2C(PS2C),.PS2D(PS2D),.ascii(ascii)
-    );  
-
+    // wire [7:0] ascii;
+    // keyboard kbd0(
+    //     .clk(clk),.PS2C(PS2C),.PS2D(PS2D),.ascii(ascii)
+    // );  
 
     // to Player Control //
     wire [3:0] collision;
@@ -106,6 +111,7 @@ module top(
         .din(tracer_dout),
         .dout(vga_din)
     );
+    // ip core ram //
     // ip_ram pixel_ram(
     //     .clka(clk),
     //     .wea(1'b1),
@@ -126,11 +132,7 @@ module top(
         .row_addr(write_row_addr),
         .dout(tracer_dout),
         .collision_sig(collision)
-        ,.max_add({5'd0,SW_ok[2:1]})
-        ,.second_add({4'd0,SW_ok[4:3]})
-        ,.total_add({5'd0,SW_ok[7:5]})
     );
-
 
     // and VGA //
     vga vga0(
@@ -145,14 +147,14 @@ module top(
 
     // with Obj Sys //
     object_host object_host0(
-        .clk(clkdiv[15]),
+        .clk(clkdiv[22]),
         .rst(RST_OK),
         .rotate(rotate_sig),
         .move(move_sig),
         .out_bus(object_ram_bus)
     );
  
-    assign LED = {move_sig,rotate_sig,collision};//8'hff;
+    assign LED = {move_sig,rotate_sig,collision};/
 
 endmodule
 

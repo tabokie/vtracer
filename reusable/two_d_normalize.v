@@ -34,9 +34,9 @@ module two_d_normalize(
     mold mold0(.clk(clk),.x(nx),.y(ny),.z(20'b0),.mold(nmold));
 
     wire [19:0] norx;
-    assign norx = nx*d/nmold;
-    wire [19:0] nory;
-    assign nory = ny*d/nmold;
+    wire [19:0] nory; 
+    my_div #(.dividendBITS(20),.divisorBITS(20)) divx(.dividend(nx*d),.divisor(nmold),.quotient(norx),.fractional());
+    my_div #(.dividendBITS(20),.divisorBITS(20)) divy(.dividend(ny*d),.divisor(nmold),.quotient(nory),.fractional());
 
     always @(*)begin
         normalized_x[9:0] = nx[9:0];

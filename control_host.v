@@ -32,69 +32,75 @@ module control_host(
     reg [1:0] rotate;
     reg [1:0] move;
 
-    always @(key[3:2])begin
-        case(key[3:2])
+    always @(key[1:0])begin
+        case(key[1:0])
             // l
-            2'b10: rotate[1] = 1;
+            2'b10: rotate[1] = 1'b1;
             // r
-            2'b01: rotate[0] = 1;
+            2'b01: rotate[0] = 1'b1;
+            default:begin
+                rotate = 2'b0;
+            end
         endcase
     end
 
-    always @(key[1:0])begin
-        case(key[1:0])
+    always @(key[3:2])begin
+        case(key[3:2])
             // b
-            2'b01: move[0] = 1;
+            2'b01: move[0] = 1'b1;
             // f
-            2'b10: move[1] = 1;
+            2'b10: move[1] = 1'b1;
+            default:begin
+                move = 2'b0;
+            end
         endcase
     end
 
     always @(posedge clk or negedge rst)begin
         if(!rst)begin
-            rotate_sig[1] <= 0;
+            rotate_sig[1] <= 1'b0;
         end
         else if(en_left)begin
             rotate_sig[1] <= rotate[1];
         end
         else begin
-            rotate_sig[1] <= 0;
+            rotate_sig[1] <= 1'b0;
         end
     end
 
     always @(posedge clk or negedge rst)begin
         if(!rst)begin
-            rotate_sig[0] <= 0;
+            rotate_sig[0] <= 1'b0;
         end
         else if(en_right)begin
             rotate_sig[0] <= rotate[0];
         end
         else begin
-            rotate_sig[0] <= 0;
+            rotate_sig[0] <= 1'b0;
         end
     end
 
     always @(posedge clk or negedge rst)begin
         if(!rst)begin
-            move_sig[1] <= 0;
+            move_sig[1] <= 1'b0;
         end
         else if(en_forward)begin
             move_sig[1] <= move[1];
         end
         else begin
-            move_sig[1] <= 0;
+            move_sig[1] <= 1'b0;
         end
     end
 
     always @(posedge clk or negedge rst)begin
        if(!rst)begin
-            move_sig[0] <= 0;
+            move_sig[0] <= 1'b0;
         end
         else if(en_backward)begin
             move_sig[0] <= move[0];
         end
         else begin
-            move_sig[0] <= 0;
+            move_sig[0] <= 1'b0;
         end
     end
 

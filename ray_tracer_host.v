@@ -21,15 +21,19 @@
 // pipeline latency
 `define MAX_LATENCY 37
 `define MAX_WIDTH 7
-`define TOTAL_LATENCY 90
-// 75
-// a+b+2
+// for no shader
+// 54 + 34 + 2 = 90
+// `define TOTAL_LATENCY 90
+// for shader added
+// 88 + 34 + 2 = 124
+`define TOTAL_LATENCY 124
 `define TOTAL_WIDTH 8
 // canvas size
 `define COL_INIT 7'd0
 `define ROW_INIT 6'd0
 `define COL_MAX 7'd79
 `define ROW_MAX 6'd59
+
 
 module ray_tracer_host(
     input clk,
@@ -39,29 +43,9 @@ module ray_tracer_host(
     output reg [5:0] row_addr,
     output reg [11:0] dout,
     output reg [3:0] collision_sig
-    // test
-    ,input [6:0] max_add,
-    input [5:0] second_add,
-    input [7:0] total_add
-    // ,output [30:0] view_show,
-    // output [11:0] color_show,
-    // output [6:0] i_show,
-    // output [5:0] k_show,
-    // output [7:0] j_show,
-    // output [9:0] t_show
-    // ,output [19:0] d_mold_show,
-    // output [19:0] delta_show,
-    // output [19:0] div_res,
-    // output [19:0] final_show
 );
-    // assign view_show = view_ray_out;
-    // assign color_show = pixel_color_out;
-    // assign i_show = i;
-    // assign k_show = k;
-    // assign j_show = j;
-    // function: visit one pixel at a time, then trace and shade
 
-    // reg [`TOTAL_WIDTH-1:0] TOTAL = `TOTAL_LATENCY;
+    // function: visit one pixel at a time, then trace and shade
 
     // Task Dispatcher
     reg [`MAX_WIDTH-1:0] i;
@@ -72,20 +56,16 @@ module ray_tracer_host(
             col_cnt <= `COL_INIT;
             row_cnt <= `ROW_INIT;
             i <= 0;
-            // TOTAL <=   `TOTAL_LATENCY + {1'b0,addition};
         end
         else begin
-            if(i == `MAX_LATENCY -2 + max_add)begin
-            // if(i==`MAX_LATENCY - 2)begin
+            if(i==`MAX_LATENCY - 2)begin
                 i <= i + 1;
                 col_cnt <= (col_cnt == `COL_MAX) ? `COL_INIT : (col_cnt + 7'd1);
                 if(col_cnt == `COL_MAX)begin
                     row_cnt <= (row_cnt == `ROW_MAX) ? `ROW_INIT : (row_cnt + 6'd1); 
-                    // row_cnt <= (row_cnt == `ROW_MAX) ? `ROW_MAX : (row_cnt + 6'd1); 
                 end
             end
-            else if(i==`MAX_LATENCY -1+ max_add)begin
-            // else if(i==`MAX_LATENCY - 1)begin
+            else if(i==`MAX_LATENCY - 1)begin
                 i <= 0;
             end
             else begin
@@ -102,8 +82,7 @@ module ray_tracer_host(
             rt_rst <= 1'b0;
         end
         else begin
-            if( k == 6'd34 + second_add)begin
-            // if( k == 6'd34)begin
+            if( k == 6'd34)begin
                 rt_rst <= 1'b1;
             end
             else begin
@@ -123,7 +102,7 @@ module ray_tracer_host(
         .view_out(view_ray_out)
     );
 
-    /*  39 clk  */ /*  => 52+2=54  */
+    /*  52+2=54  */ /*  => 52+34+2 = 88  */
     // pipeline B
     // Ray Tracer (shader included)
     wire [11:0] pixel_color_out;
@@ -132,11 +111,6 @@ module ray_tracer_host(
         .clk(clk),.rst(rt_rst),
         .in_bus(in_bus),.init(in_bus[27:0]),.dir(view_ray_out),
         .dout(pixel_color_out),.collision_ret(pixel_collision_out));
-        // ,.t_show(t_show)
-        // ,.d_mold_show(d_mold_show)
-        // ,.delta_show(delta_show)
-        // ,.div_res(div_res)
-        // ,.final_show(final_show));
 
    // Data Dispatcher
     reg [`TOTAL_WIDTH-1:0] j;
@@ -151,8 +125,7 @@ module ray_tracer_host(
         end
         else begin
             if(first_latency == 1'd1)begin
-                if(j == `TOTAL_LATENCY + total_add)begin
-                // if(j==`TOTAL_LATENCY)begin
+                if(j==`TOTAL_LATENCY)begin
                     first_latency <= 1'd0;
                     j <= 0;
                     col_addr <= `COL_INIT;
@@ -164,18 +137,15 @@ module ray_tracer_host(
                 end
             end
             else begin
-                if(j == `MAX_LATENCY -2 + max_add)begin
-                // if(j == `MAX_LATENCY - 2)begin
+                if(j == `MAX_LATENCY - 2)begin
                     j <= j + 1;
                     col_addr <= (col_addr == `COL_MAX) ? `COL_INIT : (col_addr + 7'd1);
                     if(col_addr == `COL_MAX)begin
                         row_addr <= (row_addr == `ROW_MAX) ? `ROW_INIT : (row_addr + 6'd1);
-                        // row_addr <= (row_addr == `ROW_MAX) ? `ROW_MAX : (row_addr + 6'd1);
                     end
                     dout <= pixel_color_out;                    
                 end
-                else if(j == `MAX_LATENCY -1+ max_add)begin
-                // else if(j == `MAX_LATENCY - 1)begin
+                else if(j == `MAX_LATENCY - 1)begin
                     j <= 0;
                 end
                 else begin

@@ -1,5 +1,7 @@
 
-module Register(register_divisor_in,register_dividend_in,register_quotient_in,register_divisor_out,register_dividend_out,register_quotient_out,clock);
+module Register(
+	register_divisor_in,register_dividend_in,register_quotient_in,register_divisor_out,register_dividend_out,register_quotient_out,clock
+);
 parameter divisorBITS=10;
 parameter dividendBITS=20;
 parameter addBITS=divisorBITS+dividendBITS-1;

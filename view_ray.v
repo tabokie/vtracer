@@ -36,13 +36,6 @@ module view_ray(
 	input [12:0] view_loc, // (x,y) 7-6
 	output [30:0] view_out
 
-	// test 
-	// ,output [5:0] i_show
-	// ,output [19:0]d_length_show
-	// ,output [19:0]div_show
-	// ,output [19:0] pool1_show
-	// ,output [19:0] pool2_show
-	// ,output [19:0] pool3_show
  );
 
 	// ray generate formula:
@@ -164,10 +157,14 @@ module view_ray(
 	ip_div_20 div_ins1(.clk(clk),.rfd(),
 		.dividend(sum1_reg_2),.divisor(d_length),
 		.quotient(y_div_res),.fractional());
-		// assign div_show = x_div_res;
+	// my_div #(.divisorBITS(11),.dividendBITS(20)) div_ins0(.clk(clk),
+	// 	.dividend(sum0_reg_2),.divisor({1'b0,d_length[9:0]}),
+	// 	.quotient(x_div_res),.fractional());
+	// my_div #(.divisorBITS(11),.dividendBITS(20)) div_ins1(.clk(clk),
+	// 	.dividend(sum1_reg_2),.divisor({1'b0,d_length[9:0]}),
+	// 	.quotient(y_div_res),.fractional());
 
 
-	// output from pooling 3
 	assign view_out = {view_out_x[10:0],view_out_y[10:0],view_out_z[8:0]};
 
 endmodule

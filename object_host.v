@@ -27,6 +27,7 @@ module object_host(
     input [1:0] move,
     output [179:0] out_bus
 );
+    // Numeric system:
     // uint: 10-bit / 8-bit
     // min_dist: 8-bit (<256)
     // max_dist: 11-bit
@@ -36,7 +37,7 @@ module object_host(
 
     // player: 28 + 31 + 8 + 1 = 68
     reg [27:0] view_init = 28'b0; // point: x10_y10_z8
-    reg [30:0] view_normal = 31'b00000000000_00000000001_000000000; //31'b00111111111_00111111111_000000000; // vector: x11_y11_z9
+    reg [30:0] view_normal = 31'b00000000000_00000010000_000000000; //31'b00111111111_00111111111_000000000; // vector: x11_y11_z9
     reg [7:0] view_dist = 8'b1111; // min_dist: 8
     reg view_light_en = 1'b0; // if also a light obj
     assign out_bus[67:0] = {view_light_en,view_dist,view_normal,view_init};
@@ -91,15 +92,15 @@ module object_host(
                 end
             endcase
             case(move)
-                2'b01:begin
-                    // backward: x+=dx,y+=dy
-                    {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} + my);
-                    {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} + mx);
-                end
                 2'b10:begin
-                    // forward: x-=dx,y-=dy
-                    {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} + ~my + 11'b1);
-                    {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} + ~mx + 11'b1);
+                    // forward: x+=dx,y+=dy
+                    {change,view_init[27:18]} <= ({1'b0,view_init[27:18]} + mx);
+                    {change,view_init[17:8]} <= ({1'b0,view_init[17:8]} + my);
+                end
+                2'b01:begin
+                    // backward: x-=dx,y-=dy
+                    {change,view_init[27:18]} <= (view_init[27:18]<=my[9:0]) ? 11'b0 : ({1'b0,view_init[27:18]} + ~mx + 11'b1);
+                    {change,view_init[17:8]} <= (view_init[17:8]<=my[9:0]) ? 11'b0 : ({1'b0,view_init[17:8]} + ~my + 11'b1);
                 end
             endcase
         end

@@ -1,48 +1,49 @@
 `timescale 1ns / 1ps
 
-module my_div(divisor,dividend,quotient,fractional,clk);
+module my_div(
+	input clk,
+	input [divisorBITS-1:0] divisor,
+	input [dividendBITS-1:0] dividend,
+	output [dividendBITS-1:0]quotient,
+	output [addBITS-1:0]fractional
+);
 	parameter divisorBITS=10;
 	parameter dividendBITS=20;
 	parameter addBITS=divisorBITS+dividendBITS-1;
 
-	input clk;
-	input [divisorBITS-1:0] divisor;
 	wire [divisorBITS-1:0] divisor_u;
 	assign divisor_u = (divisor[divisorBITS-1]==1'b1) ? (~divisor+1) : divisor;
-	input [dividendBITS-1:0] dividend;
 	wire [dividendBITS-1:0] dividend_u;
 	assign dividend_u = (dividend[dividendBITS-1]==1'b1) ? (~dividend+1) : dividend;
-	output [dividendBITS-1:0]quotient;
 	wire [dividendBITS-1:0]quotient_mid[dividendBITS-1:0];
 	wire [dividendBITS-1:0]quotient_temp[dividendBITS-1:0];
-	output [addBITS-1:0]fractional;
 	wire [addBITS-1:0] difference[dividendBITS-1:0];
 	
 	genvar i;
 	wire [addBITS-1:0] divisor_int [dividendBITS-1:0];
 	wire [addBITS-1:0] dividend_int [dividendBITS-1:0];	
 	wire [addBITS-1:0] stage_divisor_int_out [dividendBITS-1:0];
-	wire [addBITS-1:0]register_dividend_int_out[dividendBITS-1:0];
-	wire [addBITS-1:0]register_divisor_int_out[dividendBITS-1:0];
-	wire [dividendBITS-1:0]register_quotient_int_out[dividendBITS-1:0];
-	wire [dividendBITS-1:0]stage_quotient_int_in[dividendBITS-1:0];
-	wire [dividendBITS-1:0]register_quotient_int_in[dividendBITS-1:0];
+	wire [addBITS-1:0] register_dividend_int_out[dividendBITS-1:0];
+	wire [addBITS-1:0] register_divisor_int_out[dividendBITS-1:0];
+	wire [dividendBITS-1:0] register_quotient_int_out[dividendBITS-1:0];
+	wire [dividendBITS-1:0] stage_quotient_int_in[dividendBITS-1:0];
+	wire [dividendBITS-1:0] register_quotient_int_in[dividendBITS-1:0];
 
 	assign divisor_int[dividendBITS-1]=divisor_u;
 	assign dividend_int[dividendBITS-1]=dividend_u;
 	assign stage_quotient_int_in[dividendBITS-1] = 'b0;
 
-	Stage S1 (divisor_int[dividendBITS-1],dividend_int[dividendBITS-1],dividendBITS-1,stage_quotient_int_in[dividendBITS-1],quotient_mid[dividendBITS-1],difference[dividendBITS-1],stage_divisor_int_out[dividendBITS-1]); // first instance of the stage 
-	Register R (stage_divisor_int_out[dividendBITS-1],difference[dividendBITS-1],quotient_mid[dividendBITS-1],register_divisor_int_out[dividendBITS-1],register_dividend_int_out[dividendBITS-1],register_quotient_int_out[dividendBITS-1],clk);// first instance of register
+	Stage #(.divisorBITS(divisorBITS),.dividendBITS(dividendBITS)) S1 (divisor_int[dividendBITS-1],dividend_int[dividendBITS-1],dividendBITS-1,stage_quotient_int_in[dividendBITS-1],quotient_mid[dividendBITS-1],difference[dividendBITS-1],stage_divisor_int_out[dividendBITS-1]); // first instance of the stage 
+	Register #(.divisorBITS(divisorBITS),.dividendBITS(dividendBITS)) R (stage_divisor_int_out[dividendBITS-1],difference[dividendBITS-1],quotient_mid[dividendBITS-1],register_divisor_int_out[dividendBITS-1],register_dividend_int_out[dividendBITS-1],register_quotient_int_out[dividendBITS-1],clk);// first instance of register
 	
 	generate
 	for (i=dividendBITS-2;i>=0; i=i-1)begin
-		Stage S (register_divisor_int_out[i+1],register_dividend_int_out[i+1],i,register_quotient_int_out[i+1],quotient_mid[i],difference[i],stage_divisor_int_out[i]); // using a generate loop to create instances, connecting each stage appropriately
-		Register R (stage_divisor_int_out[i],difference[i],quotient_mid[i],register_divisor_int_out[i],register_dividend_int_out[i],register_quotient_int_out[i],clk); // register module instantiation
+		Stage #(.divisorBITS(divisorBITS),.dividendBITS(dividendBITS)) S (register_divisor_int_out[i+1],register_dividend_int_out[i+1],i,register_quotient_int_out[i+1],quotient_mid[i],difference[i],stage_divisor_int_out[i]); // using a generate loop to create instances, connecting each stage appropriately
+		Register #(.divisorBITS(divisorBITS),.dividendBITS(dividendBITS)) R (stage_divisor_int_out[i],difference[i],quotient_mid[i],register_divisor_int_out[i],register_dividend_int_out[i],register_quotient_int_out[i],clk); // register module instantiation
 	end
 	endgenerate 
 
-	assign quotient=register_quotient_int_out[0]; // final register slice quotient value
+	assign quotient=(divisor[divisorBITS-1]^dividend[dividendBITS-1] == 1'b1) ? ~register_quotient_int_out[0] + 1 : register_quotient_int_out[0]; // final register slice quotient value
 	assign fractional=register_dividend_int_out[0]; // final register slice quotient value
 
 
