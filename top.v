@@ -32,7 +32,7 @@ module top(
     output vs,
     output [3:0] r,
     output [3:0] g,
-    output [3:0] b，
+    output [3:0] b,
     output buzzer
 	// runtime test
     ,
@@ -154,7 +154,7 @@ module top(
         .out_bus(object_ram_bus)
     );
  
-    assign LED = {move_sig,rotate_sig,collision};/
+    assign LED = {move_sig,rotate_sig,collision};
 
 endmodule
 
