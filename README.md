@@ -2,7 +2,7 @@
 
 Structure skeleton:
 
-![skeleton](https://raw.githubusercontent.com/tabokie/verilog-3d-first-person/master/Structure Diagram.png)
+![skeleton](https://raw.githubusercontent.com/tabokie/verilog-3d-first-person/master/Structure_Diagram.png)
 
 test pictures for 3D ray tracer run on Nexys 3(limited function):
 
