@@ -1,10 +1,10 @@
 # vtracer
 
-This project attempts to implement structured parallel program, in which case, a 3D ray casting program.
+This project attempts to implement structured parallel program on FPGA platform, in which case, a 3D ray casting program.
 
 Each casted ray is sent through tracer bus, and collide against different tracable object. After result summary and color shading, per-pixel color is passed for further usage.
 
-To fully utilize the computing potential, pipelining of object tracing pass is implemented so that the ray spawning rate fixes at 30 clk per ray.
+To fully utilize the computing potential, **pipelining** of object tracing pass is implemented so that the ray spawning rate fixes at 30 clk per ray.
 
 ### Structure skeleton:
 
